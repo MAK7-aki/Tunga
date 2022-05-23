@@ -1,16 +1,13 @@
 from imutils.video import VideoStream
 from collections import deque
-
 import imutils
 import cv2
-import datetime
 
 pts = deque(maxlen=20)
 initBB = None
 tracker = cv2.TrackerMOSSE_create()
 
 vs = VideoStream(src="rtsp://admin:tunga@2020@10.223.45.100").start()
-
 
 while True:
 
@@ -34,14 +31,14 @@ while True:
 
 			cv2.rectangle(frame, (x, y), (x + w, y + h),(0, 255, 255), 2)
 
-			a = (round(ex),round(ey),2000)
+			#a = (round(ex),round(ey),2000)
 
 			pts.append(bb_centroid)
 
 
 		elif not success:
 			initBB = None
-			a = (320,240)	
+			#a = (320,240)	
 
 		for i in range(1, len( pts)):
 			if  pts[i - 1] is None or  pts[i] is None:
