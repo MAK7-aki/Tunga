@@ -9,63 +9,40 @@ from gi.repository import Gst, GstRtspServer, GObject
 # Sensor Factory class which inherits the GstRtspServer base class and add
 # properties to it.
 class SensorFactory(GstRtspServer.RTSPMediaFactory):
-
     def __init__(self, **properties):
         super(SensorFactory, self).__init__(**properties)
-        self.cap =cv2.VideoCapture("rtsp://admin:tunga@2020@10.223.45.100")
+        self.cap = cv2.VideoCapture("rtsp://admin:tunga@2020@10.223.45.100")
         self.number_frames = 0
         self.fps = 30
         self.duration = 1 / self.fps * Gst.SECOND  # duration of a frame in nanoseconds
         self.launch_string = 'appsrc name=source is-live=true block=true format=GST_FORMAT_TIME ' \
-                            'caps=video/x-raw,format=BGR,width={},height={},framerate={}/1 ' \
-                            '! videoconvert ! video/x-raw,format=I420 ' \
-                            '! x264enc speed-preset=ultrafast tune=zerolatency ' \
-                            '! rtph264pay config-interval=1 name=pay0 pt=96' \
-                            .format(640, 480, self.fps)
-    
+                             'caps=video/x-raw,format=BGR,width={},height={},framerate={}/1 ' \
+                             '! videoconvert ! video/x-raw,format=I420 ' \
+                             '! x264enc speed-preset=ultrafast tune=zerolatency ' \
+                             '! rtph264pay config-interval=1 name=pay0 pt=96' \
+                             .format(640, 480, self.fps)
     # method to capture the video feed from the camera and push it to the
     # streaming buffer.
     def on_need_data(self, src, length):
         if self.cap.isOpened():
             ret, frame = self.cap.read()
-            bbox = None
-            tracker = cv2.TrackerMOSSE_create()
+            tracker = cv2.TrackerKCF_create()
+            bbox = cv2.selectROI(frame)
+            ret = tracker.init(frame,bbox)
             if ret:
-                # frame=self.cap.read()
-                timer = cv2.getTickCount()
                 # It is better to change the resolution of the camera 
                 # instead of changing the image shape as it affects the image quality.
                 frame = cv2.resize(frame, (640, 480), \
                     interpolation = cv2.INTER_LINEAR)
 
-                fps = cv2.getTickFrequency()/(cv2.getTickCount()-timer)
-                cv2.putText(frame,str(int(fps)),(75,50),cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
+                
 
-                if bbox is not None :
-                    ok,bbox=tracker.update(frame)
-                    # if ok:
-                    (x,y,w,h)=[int(v) for v in bbox]
-                    cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2,1)
-                    # else:
-                    #     bbox = None
-                    #     cv2.putText(frame,'Error',(100,0),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
-
-                # cv2.imshow('Tracking',frame)
-                # key = cv2.waitKey(1) & 0XFF
-                    
-                #if cv2.waitKey(1) & 0XFF == ord('a'):
-                tracker = cv2.TrackerMOSSE_create()
-                bbox = (270 ,190, 100 ,150)
-                tracker.init(frame,bbox)
-
-                # elif cv2.waitKey(1) & 0XFF == ord('w'):
-                #     bbox = None
-
-            #     elif key == ord("q"):
-            #         break
-
-            # cv2.destroyAllWindows()
-
+                ok,bbox=tracker.update(frame)
+                if ok:
+                        (x,y,w,h)=[int(v) for v in bbox]
+                        cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2,1)
+                else:
+                        cv2.putText(frame,'Error',(100,0),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
 
 
 

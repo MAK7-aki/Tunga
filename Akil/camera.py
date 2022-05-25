@@ -1,7 +1,6 @@
 from imutils.video import VideoStream
 import imutils
 import cv2
-import os
 
 vs= VideoStream(src="rtsp://admin:tunga@2020@10.223.45.100").start()
 # from subprocess import call
@@ -14,7 +13,7 @@ while True:
      
     cv2.imshow("Frame", frame)
     k = cv2.waitKey(1) & 0xFF
-    if k == ord('e'): # e key ends process
+    if k == ord('q'): # q key ends process
         break
     # call (["python3","gpu.py"]) 
 

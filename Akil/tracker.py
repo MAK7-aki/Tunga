@@ -1,34 +1,44 @@
 import cv2
 
-cap =cv2.VideoCapture("rtsp://admin:tunga@2020@10.223.45.100")
-
 tracker = cv2.TrackerMOSSE_create()
-success,img = cap.read()
+video = cv2.VideoCapture("rtsp://admin:tunga@2020@10.223.45.100")
+# ok,img=video.read()
 
+# frame = cv2.resize(img,(640,480))
+bbox = None
 
-bbox = cv2.selectROI("Tracking",img,False)
-tracker.init(img,bbox)
-def drawBox(img,bbox):
-    pass
+# ok = tracker.init(frame,bbox)
 
 while True:
-    timer = cv2.getTickCount()
-    success,img = cap.read()
+    ok,frame=video.read()
+    # try:
+    frame = cv2.resize(frame, (640, 480), \
+            interpolation = cv2.INTER_LINEAR)
+    # except Exception as e:
+    #     pass
+    # if not ok:
+    #     break
+    if bbox is not None :
+        ok,bbox=tracker.update(frame)
+        if ok:
+            (x,y,w,h)=[int(v) for v in bbox]
+            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2,1)
+        else:
+            bbox = None
+            cv2.putText(frame,'Error',(100,0),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
 
-    success,bbox = tracker.update(img)
-    print(type(bbox))
-    if success:
-        drawBox(img,bbox)
-    else:
-        cv2.putText(frame,"lost",(75,75),cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
-
+    cv2.imshow('Tracking',frame)
+    key = cv2.waitKey(1) & 0XFF
         
-    frame = cv2.resize(img,(640,480))
+    if key == ord("a"):
+        tracker = cv2.TrackerMOSSE_create()
+        bbox = (270 ,190, 100 ,150)
+        tracker.init(frame,bbox)
 
-    fps = cv2.getTickFrequency()/(cv2.getTickCount()-timer)
-    cv2.putText(frame,str(int(fps)),(75,50),cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
-    cv2.imshow("Tracking",frame)
+    elif key == ord('w'):
+        bbox = None
 
-
-    if cv2.waitKey(1) & 0xFF ==ord('q'):
+    elif key == ord("q"):
         break
+
+cv2.destroyAllWindows()
