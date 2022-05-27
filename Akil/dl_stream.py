@@ -11,7 +11,7 @@ from gi.repository import Gst, GstRtspServer, GObject
 class SensorFactory(GstRtspServer.RTSPMediaFactory):
     def __init__(self, **properties):
         super(SensorFactory, self).__init__(**properties)
-        self.cap = cv2.VideoCapture("rtsp://admin:tunga@2020@10.223.45.100")
+        self.cap = cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
         self.number_frames = 0
         self.fps = 30
         self.duration = 1 / self.fps * Gst.SECOND  # duration of a frame in nanoseconds
@@ -59,7 +59,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
 class GstServer(GstRtspServer.RTSPServer):
     def __init__(self, **properties):
         self.rtspServer = GstRtspServer.RTSPServer()
-        self.rtspServer.set_address("127.0.0.1")
+        self.rtspServer.set_address("192.168.1.11")
         factory = SensorFactory()
         factory.set_shared(True)
         mountPoints = self.rtspServer.get_mount_points()

@@ -2,14 +2,17 @@ import cv2
 
 tracker = cv2.TrackerMOSSE_create()
 video = cv2.VideoCapture("rtsp://admin:tunga@2020@10.223.45.100")
-# ok,img=video.read()
+ok,img=video.read()
 
-# frame = cv2.resize(img,(640,480))
-bbox = None
+frame = cv2.resize(img,(640,480))
+#bbox = None
+tracker = cv2.TrackerMOSSE_create()
+bbox = (270 ,190, 100 ,150)
+tracker.init(frame,bbox)
 
 # ok = tracker.init(frame,bbox)
 
-while True:
+while ok:
     ok,frame=video.read()
     # try:
     frame = cv2.resize(frame, (640, 480), \
@@ -30,15 +33,16 @@ while True:
     cv2.imshow('Tracking',frame)
     key = cv2.waitKey(1) & 0XFF
         
-    if key == ord("a"):
-        tracker = cv2.TrackerMOSSE_create()
-        bbox = (270 ,190, 100 ,150)
-        tracker.init(frame,bbox)
-
-    elif key == ord('w'):
-        bbox = None
-
-    elif key == ord("q"):
+    if key == ord("q"):
         break
+    #     tracker = cv2.TrackerMOSSE_create()
+    #     bbox = (270 ,190, 100 ,150)
+    #     tracker.init(frame,bbox)
+
+    # elif key == ord('w'):
+    #     bbox = None
+
+    # elif key == ord("q"):
+    #     break
 
 cv2.destroyAllWindows()

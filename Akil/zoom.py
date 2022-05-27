@@ -2,9 +2,9 @@ import cv2
 from imutils.video import VideoStream
 
 def show_webcam(mirror=False):
-    scale=10
+    scale=50
 
-    cam = VideoStream(src="rtsp://admin:tunga@2020@10.223.45.100").start()
+    cam = VideoStream(src="rtsp://admin:tunga@2020@10.223.45.100 ").start()
     while True:
         image = cam.read()
         if mirror: 
@@ -32,10 +32,10 @@ def show_webcam(mirror=False):
         #add + or - 5 % to zoom
 
         if cv2.waitKey(1) == ord('e'): 
-            scale += 5  # +5
+            scale += 10  # +5
 
         if cv2.waitKey(1) == ord('q'): 
-            scale = 5  # +5
+            scale -= 10  # +5
 
     cv2.destroyAllWindows()
 

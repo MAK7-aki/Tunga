@@ -2,7 +2,7 @@ from imutils.video import VideoStream
 import imutils
 import cv2
 
-vs= VideoStream(src="rtsp://admin:tunga@2020@10.223.45.100").start()
+vs= VideoStream(src="rtsp://admin:tunga@2020@192.168.168.64").start()
 # from subprocess import call
 
 while True:
