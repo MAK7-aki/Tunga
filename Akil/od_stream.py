@@ -1,5 +1,6 @@
 import gi
 import cv2
+import numpy as np
 
 # import required library like Gstreamer and GstreamerRtspServer
 gi.require_version('Gst', '1.0')
@@ -9,28 +10,62 @@ from gi.repository import Gst, GstRtspServer, GObject
 # Sensor Factory class which inherits the GstRtspServer base class and add
 # properties to it.
 class SensorFactory(GstRtspServer.RTSPMediaFactory):
+
     def __init__(self, **properties):
         super(SensorFactory, self).__init__(**properties)
-        self.cap = cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
+        self.cap =cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
+        frame = self.cap.read()
+
+        # img = cv2.resize(np.frame.all(), (640, 480))
+
+        #img = cv2.resize(frame, (640, 480))
+
         self.number_frames = 0
         self.fps = 30
         self.duration = 1 / self.fps * Gst.SECOND  # duration of a frame in nanoseconds
         self.launch_string = 'appsrc name=source is-live=true block=true format=GST_FORMAT_TIME ' \
-                             'caps=video/x-raw,format=BGR,width={},height={},framerate={}/1 ' \
-                             '! videoconvert ! video/x-raw,format=I420 ' \
-                             '! x264enc speed-preset=ultrafast tune=zerolatency ' \
-                             '! rtph264pay config-interval=1 name=pay0 pt=96' \
-                             .format(640, 480, self.fps)
+                            'caps=video/x-raw,format=BGR,width={},height={},framerate={}/1 ' \
+                            '! videoconvert ! video/x-raw,format=I420 ' \
+                            '! x264enc speed-preset=ultrafast tune=zerolatency ' \
+                            '! rtph264pay config-interval=1 name=pay0 pt=96' \
+                            .format(640, 480, self.fps)
+    
     # method to capture the video feed from the camera and push it to the
     # streaming buffer.
     def on_need_data(self, src, length):
         if self.cap.isOpened():
             ret, frame = self.cap.read()
+            ret, frame2 = self.cap.read()
             if ret:
+
                 # It is better to change the resolution of the camera 
                 # instead of changing the image shape as it affects the image quality.
                 frame = cv2.resize(frame, (640, 480), \
                     interpolation = cv2.INTER_LINEAR)
+                frame2 = cv2.resize(frame2, (640, 480), \
+                    interpolation = cv2.INTER_LINEAR)
+
+                diff = cv2.absdiff(frame, frame2)
+                gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+                blur = cv2.GaussianBlur(gray, (5,5), 0)
+                _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)
+                dilated = cv2.dilate(thresh, None, iterations=3)
+                contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+                for contour in contours:
+                    (x, y, w, h) = cv2.boundingRect(contour)
+
+                    if cv2.contourArea(contour) < 900:
+                        continue
+                    cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+                    cv2.putText(frame, "Status: {}".format('Movement'), (10, 20), cv2.FONT_HERSHEY_SIMPLEX,
+                                1, (0, 0, 255), 3)
+                #cv2.drawContours(frame, contours, -1, (0, 255, 0), 2)
+
+                # image = cv2.resize(frame, (640,480))
+                # out.write(image)
+                # cv2.imshow("feed", frame)
+
 
 
                 data = frame.tostring()
@@ -45,9 +80,11 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                 print('pushed buffer, frame {}, duration {} ns, durations {} s'.format(self.number_frames,
                                                                                        self.duration,
                                                                                        self.duration / Gst.SECOND))
-                if retval != Gst.FlowReturn.OK:
-                     print(retval)
-        
+                frame = frame2
+                ret, frame2 = self.cap.read()
+                
+                # if retval != Gst.FlowReturn.OK:
+                #     print(retval)
     # attach the launch string to the override method
     def do_create_element(self, url):
         return Gst.parse_launch(self.launch_string)

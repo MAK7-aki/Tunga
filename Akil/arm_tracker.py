@@ -1,8 +1,14 @@
 import cv2
+from pymavlink import mavutil
 
+master = mavutil.mavlink_connection("/dev/ttyUSB0", baud=115200)
+master.wait_heartbeat()
+print("Heartbeat from system (system %u component %u)" %
+      (master.target_system, master.target_component))
 tracker = cv2.TrackerMOSSE_create()
 video = cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
 bbox = None
+
 
 while True:
     ok,frame=video.read()
@@ -25,9 +31,19 @@ while True:
         tracker = cv2.TrackerMOSSE_create()
         bbox = (270 ,190, 100 ,150)
         tracker.init(frame,bbox)
+        master.mav.command_long_send(master.target_system, master.target_component,
+                                     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0)
+
+        msg = master.recv_match(type='COMMAND_ACK', blocking=True)
+        print(msg)
 
     elif key == ord('w'):
         bbox = None
+        master.mav.command_long_send(master.target_system, master.target_component,
+                                     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 0, 0, 0, 0, 0, 0, 0)
+
+        msg = master.recv_match(type='COMMAND_ACK', blocking=True)
+        print(msg)
 
     elif key == ord("q"):
         break

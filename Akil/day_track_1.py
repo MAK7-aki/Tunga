@@ -2,18 +2,19 @@ from imutils.video import VideoStream
 from collections import deque
 import imutils
 import cv2
-import numpy as np 
+import numpy as np
+import keyboard 
 
 
 pts = deque(maxlen=20)
 initBB = None
 tracker = cv2.TrackerMOSSE_create()
 
-vs = cv2.VideoCapture("rtsp://admin:tunga@2020@10.223.45.100")
+vs = cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
 
 while True:
 
-	resize =  vs.read()
+	frame =  vs.read()
 
 	# if frame is None:
 	# 	break
@@ -25,7 +26,9 @@ while True:
 	# resize1 = cv2.resize(frame, (H, W))
 	# resize=np.array(resize1)
 	# #resize = cv2.resize(frame, (640, 480)) 
-	(H, W) = (480,640)
+	resize = cv2.resize(frame, (640, 480), \
+            interpolation = cv2.INTER_LINEAR)
+	(H, W) = (640,480)
 	centroid = (W/2,H/2)
 
 	if  initBB is not None:
@@ -55,15 +58,15 @@ while True:
 	cv2.imshow("Frame", resize)
 	key = cv2.waitKey(1) & 0xFF
 
-	if key == ord("a"):
+	if keyboard.is_pressed('a'):
 		tracker = cv2.TrackerMOSSE_create()
 		initBB = (W/2 - 50 ,H/2 - 50, 100 ,150)
 		tracker.init(resize,  initBB)
 
-	elif key == ord('w'):
+	elif keyboard.is_pressed('w'):
 		initBB = None
 		
-	elif key == ord("q"):
+	elif keyboard.is_pressed('q'):
 	 	break
 
 vs.stop()
