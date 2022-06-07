@@ -2,7 +2,7 @@ import cv2
 tracker = cv2.TrackerMOSSE_create()
 bbox = None
 cv2.namedWindow("RTSP View", cv2.WINDOW_NORMAL)
-cap = cv2.VideoCapture("rtsp://127.0.0.1:8554/video_stream")
+cap = cv2.VideoCapture("rtsp://192.168.1.65:8554/video_stream")
 while True:
     ret, frame = cap.read()
  

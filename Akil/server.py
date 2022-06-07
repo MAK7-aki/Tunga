@@ -1,7 +1,6 @@
 import socket
 
  
-
 #localIP     = "192.168.168.1"
 
 localPort   = 14001
@@ -45,8 +44,15 @@ while(True):
     clientMsg = "Message from Client:{}".format(message)
     clientIP  = "Client IP Address:{}".format(address)
     
-    print(clientMsg)
-    print(clientIP)
+    
+    # print(clientIP)
+
+    info = [message[i:i + 1] for i in range(0, len(message))]
+
+    print(info)
+  
+
+    
 
    
 

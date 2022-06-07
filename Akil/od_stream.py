@@ -1,6 +1,5 @@
 import gi
 import cv2
-import numpy as np
 
 # import required library like Gstreamer and GstreamerRtspServer
 gi.require_version('Gst', '1.0')
@@ -14,7 +13,6 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
     def __init__(self, **properties):
         super(SensorFactory, self).__init__(**properties)
         self.cap =cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
-        frame = self.cap.read()
 
         # img = cv2.resize(np.frame.all(), (640, 480))
 
@@ -83,8 +81,8 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                 frame = frame2
                 ret, frame2 = self.cap.read()
                 
-                # if retval != Gst.FlowReturn.OK:
-                #     print(retval)
+                if retval != Gst.FlowReturn.OK:
+                    print(retval)
     # attach the launch string to the override method
     def do_create_element(self, url):
         return Gst.parse_launch(self.launch_string)
@@ -99,7 +97,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
 class GstServer(GstRtspServer.RTSPServer):
     def __init__(self, **properties):
         self.rtspServer = GstRtspServer.RTSPServer()
-        self.rtspServer.set_address("127.0.0.1")
+        self.rtspServer.set_address("192.168.1.65")
         factory = SensorFactory()
         factory.set_shared(True)
         mountPoints = self.rtspServer.get_mount_points()

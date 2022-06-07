@@ -3,11 +3,12 @@ import numpy as np
 
 cap = cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
 
-
 ret, frame1 = cap.read()
 ret, frame2 = cap.read()
 
 while cap.isOpened():
+    frame1 = cv2.resize(frame1, (640, 480))
+    frame2 = cv2.resize(frame2, (640, 480))
     diff = cv2.absdiff(frame1, frame2)
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (5,5), 0)
@@ -28,7 +29,7 @@ while cap.isOpened():
     frame1 = frame2
     ret, frame2 = cap.read()
 
-    if cv2.waitKey(40) == 27:
+    if cv2.waitKey(1) == 27:
         break
 
 cv2.destroyAllWindows()
