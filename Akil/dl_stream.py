@@ -59,7 +59,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
 class GstServer(GstRtspServer.RTSPServer):
     def __init__(self, **properties):
         self.rtspServer = GstRtspServer.RTSPServer()
-        self.rtspServer.set_address("192.168.1.65")
+        self.rtspServer.set_address("192.168.168.2")
         factory = SensorFactory()
         factory.set_shared(True)
         mountPoints = self.rtspServer.get_mount_points()

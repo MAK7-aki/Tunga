@@ -1,5 +1,6 @@
 import gi
 import cv2
+import os
 
 # import required library like Gstreamer and GstreamerRtspServer
 gi.require_version('Gst', '1.0')
@@ -32,7 +33,6 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                 frame = cv2.resize(frame, (640, 480), \
                     interpolation = cv2.INTER_LINEAR)
 
-                cv2.rectangle(frame,(270,190),(100,150),(0,255,0),2,1)
                 data = frame.tostring()
                 buf = Gst.Buffer.new_allocate(None, len(data), None)
                 buf.fill(0, data)
@@ -62,7 +62,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
 class GstServer(GstRtspServer.RTSPServer):
     def __init__(self, **properties):
         self.rtspServer = GstRtspServer.RTSPServer()
-        self.rtspServer.set_address("192.168.1.65")
+        self.rtspServer.set_address("192.168.1.233")
         factory = SensorFactory()
         factory.set_shared(True)
         mountPoints = self.rtspServer.get_mount_points()

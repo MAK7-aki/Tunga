@@ -1,5 +1,7 @@
 import gi
 import cv2
+import os
+
 
 # import required library like Gstreamer and GstreamerRtspServer
 gi.require_version('Gst', '1.0')
@@ -13,11 +15,6 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
     def __init__(self, **properties):
         super(SensorFactory, self).__init__(**properties)
         self.cap =cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
-
-        # img = cv2.resize(np.frame.all(), (640, 480))
-
-        #img = cv2.resize(frame, (640, 480))
-
         self.number_frames = 0
         self.fps = 30
         self.duration = 1 / self.fps * Gst.SECOND  # duration of a frame in nanoseconds
@@ -49,15 +46,21 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                 _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)
                 dilated = cv2.dilate(thresh, None, iterations=3)
                 contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
+                filesize = os.path.getsize("string.txt")
+                if filesize==0:
+                    d=""
+                else: 
+                    string=open("string.txt","r+")
+                    d=string.read()
+                cv2.putText(frame,d, (10, 20), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 0, 255), 3)
                 for contour in contours:
                     (x, y, w, h) = cv2.boundingRect(contour)
 
                     if cv2.contourArea(contour) < 900:
                         continue
                     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-                    cv2.putText(frame, "Status: {}".format('Movement'), (10, 20), cv2.FONT_HERSHEY_SIMPLEX,
-                                1, (0, 0, 255), 3)
+                    #cv2.putText(frame, "Status: {}".format('Movement'), (10, 20), cv2.FONT_HERSHEY_SIMPLEX,
+                                # 1, (0, 0, 255), 3)
                 #cv2.drawContours(frame, contours, -1, (0, 255, 0), 2)
 
                 # image = cv2.resize(frame, (640,480))
@@ -97,7 +100,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
 class GstServer(GstRtspServer.RTSPServer):
     def __init__(self, **properties):
         self.rtspServer = GstRtspServer.RTSPServer()
-        self.rtspServer.set_address("192.168.1.65")
+        self.rtspServer.set_address("192.168.168.2")
         factory = SensorFactory()
         factory.set_shared(True)
         mountPoints = self.rtspServer.get_mount_points()

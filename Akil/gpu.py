@@ -1,14 +1,15 @@
-import os
+# import os
 import psutil
 
-status = os.system('systemctl is-active --quiet service-name')
-
-try:
-      while True:
-        print(status)
-        print('The CPU usage is: ', psutil.cpu_percent(2))
-        print('RAM memory % used:', psutil.virtual_memory()[2])
+# status = os.system('systemctl is-active --quiet service-name')
 
 
-except KeyboardInterrupt:
-    pass
+while True:
+  c=psutil.cpu_percent(1)#CPU
+  r=psutil.virtual_memory().percent#RAM
+  c=int(c)
+  r=int(r)
+  print(c,r)
+
+
+
