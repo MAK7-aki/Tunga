@@ -41,15 +41,15 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
 
 				#vs = VideoStream(src="rtsp://192.168.43.1:8554/fpv_stream").start()
 				#vs = VideoStream(src=0).start()
-				tracker = cv2.TrackerMOSSE_create()
+				tracker = cv2.legacy.TrackerMOSSE_create()
 				bbox = []
 
-				try:
-					ser = serial.Serial('COM4',19200,timeout=0)
-				except:
-					ser = serial.Serial('COM4',19200,timeout=0)
-				red = ser.read()
-				
+				# try:
+				# 	ser = serial.Serial('COM4',19200,timeout=0)
+				# except:
+				# 	ser = serial.Serial('COM4',19200,timeout=0)
+				# red = ser.read()
+				red="a"
 
 				frame = imutils.resize(frame, height=480,width=640)
 				(H, W) = frame.shape[:2]
@@ -79,13 +79,13 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
 						#cv2.rectangle(frame, (int(x2[0][0]), int(y2[0][0])), (int(x2[0][0]) + w, int(y1[0][0]) + h),(0, 255, 255), 2)
 						a = (erx,ery)
 						pts.append(bb_centroid)
-						ser.write(str(a))
+						# ser.write(str(a))
 					elif not success:
-						tracker = cv2.TrackerMOSSE_create()			
+						tracker = cv2.legacy.TrackerMOSSE_create()			
 						initBB = (prev[0][0]-50,prev[1][0]-50,100,100)
 						tracker.init(frame, initBB)
 						a = (320,240)
-						ser.write(str(a))	
+						# ser.write(str(a))	
 					for i in range(1, len(pts)):
 						if pts[i - 1] is None or pts[i] is None:
 							continue
@@ -104,14 +104,14 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
 					if initBB is not None:
 					
 						initBB = None
-						ser.write('e')
+						# ser.write('e')
 
 					else:
 					
-						tracker = cv2.TrackerMOSSE_create()		
+						tracker = cv2.legacy.TrackerMOSSE_create()		
 						initBB = (W/2 - 100 ,H/2 - 100, 150 ,150)
 						tracker.init(frame,  initBB)	
-						ser.write('f')
+						# ser.write('f')
 				
 								#self.vs.release()
 				#
@@ -119,7 +119,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
 
 
 				data = frame.tostring() 
-				print(data)
+				# print(data)
 				buf = Gst.Buffer.new_allocate(None, len(data), None)
 				buf.fill(0, data)
 				buf.duration = self.duration
@@ -128,7 +128,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
 				buf.offset = timestamp
 				#self.number_frames += 1
 				retval = src.emit('push-buffer', buf) 
-			#print('pushed buffer, frame {}, duration {} ns, durations {} s'.format(self.number_frames, self.duration, self.duration / Gst.SECOND)) 
+				print('pushed buffer, frame {}, duration {} ns, durations {} s'.format(self.number_frames, self.duration, self.duration / Gst.SECOND)) 
 
 			#if retval != Gst.FlowReturn.OK: 
 			#	print(retval) 
@@ -146,7 +146,7 @@ class GstServer(GstRtspServer.RTSPServer):
 	def __init__(self, **properties): 
 		super(GstServer, self).__init__(**properties) 
 		self.factory = SensorFactory()
-		self.set_address('127.0.0.1')
+		self.set_address('192.168.168.2')
 		self.factory.set_shared(True)
 		#self.auth = GstRtspServer.RTSPAuth()
 		#self.auth.add_basic(GstRtspServer.RTSPAuth.make_basic('user','user'),GstRtspServer.RTSPToken())

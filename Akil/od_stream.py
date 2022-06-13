@@ -59,14 +59,6 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                     if cv2.contourArea(contour) < 900:
                         continue
                     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-                    #cv2.putText(frame, "Status: {}".format('Movement'), (10, 20), cv2.FONT_HERSHEY_SIMPLEX,
-                                # 1, (0, 0, 255), 3)
-                #cv2.drawContours(frame, contours, -1, (0, 255, 0), 2)
-
-                # image = cv2.resize(frame, (640,480))
-                # out.write(image)
-                # cv2.imshow("feed", frame)
-
 
 
                 data = frame.tostring()

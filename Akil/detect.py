@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
-from pymavlink import mavutil
+# from pymavlink import mavutil
 
 cap = cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
-master = mavutil.mavlink_connection("/dev/ttyUSB0", baud=115200)
-master.wait_heartbeat()
-print("Heartbeat from system (system %u component %u)" %
-      (master.target_system, master.target_component))
+# master = mavutil.mavlink_connection("/dev/ttyUSB0", baud=115200)
+# master.wait_heartbeat()
+# print("Heartbeat from system (system %u component %u)" %
+#       (master.target_system, master.target_component))
 
 ret, frame1 = cap.read()
 ret, frame2 = cap.read()

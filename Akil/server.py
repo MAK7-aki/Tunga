@@ -79,13 +79,13 @@ while(True):
                 string.truncate(0)
                 string.write(d)
                 string.close()
-            os.system("pkill -f /home/grimm/Desktop/Akil/dl_stream.py")
-            os.system("pkill -f /home/grimm/Desktop/Akil/od_stream.py")
-            call(["gnome-terminal", "--", "sh", "-c", "python3 /home/grimm/Desktop/Akil/od_stream.py; bash"])
+            os.system("pkill -f /home/tunga/Desktop/Akil/dl_stream.py")
+            os.system("pkill -f /home/tunga/Desktop/Akil/od_stream.py")
+            call(["gnome-terminal", "--", "sh", "-c", "python3 /home/tunga/Desktop/Akil/od_stream.py; bash"])
         elif cmd[0]==b'\x0b' and cmd[1]== b'\x00':
-            os.system("pkill -f /home/grimm/Desktop/Akil/od_stream.py")
-            os.system("pkill -f /home/grimm/Desktop/Akil/dl_stream.py")
-            call(["gnome-terminal", "--", "sh", "-c", "python3 /home/grimm/Desktop/Akil/dl_stream.py; bash"])
+            os.system("pkill -f /home/tunga/Desktop/Akil/od_stream.py")
+            os.system("pkill -f /home/tunga/Desktop/Akil/dl_stream.py")
+            call(["gnome-terminal", "--", "sh", "-c", "python3 /home/tunga/Desktop/Akil/dl_stream.py; bash"])
         # else:
         #     print("not valid")
         

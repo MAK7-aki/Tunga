@@ -1,7 +1,8 @@
-# from subprocess import call
+from subprocess import call
 
-# call(["gnome-terminal", "--", "sh", "-c", "python3 /home/grimm/Desktop/Akil/camera.py; bash"])
-# # sudo pkill -9 python
-from server import c
+k="on"
+call(["gnome-terminal", "--", "sh", "-c", "python3 /home/tunga/Desktop/Akil/ot_stream.py %s; bash"%k])
+# sudo pkill -9 python
+# from server import c
 
-print(c)
+# print(c)
