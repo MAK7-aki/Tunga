@@ -1,7 +1,7 @@
 from subprocess import call
 import os
 
-data =b'TA\x06\x0b\x01\x61\x6b\x69\x6c\x00\xaf'
+data =b'TA\x02\x0e\x01'
 k=0
 d=""
 info = [data[i:i + 1] for i in range(0, len(data))]
@@ -22,15 +22,18 @@ if (info[0] == b'T' and info[1] == b'A'):
         
     # if k==valid:
     #     print("valid command")
-
-    if cmd[0]==b'\x0b' and cmd[1]== b'\x01':
-        if(length>2):
-            for i in range(2,length):
-                d=d+cmd[i].decode("utf-8") 
-            string=open("string.txt","w")
-            string.truncate(0)
-            string.write(d)
-            string.close()
+    if cmd[0]==b'\x0e' and cmd[1]== b'\x01':
+        string=open("read.txt","r+")
+        d=string.read()
+    print(d)
+    # if cmd[0]==b'\x0b' and cmd[1]== b'\x01':
+    #     if(length>2):
+    #         for i in range(2,length):
+    #             d=d+cmd[i].decode("utf-8") 
+    #         string=open("string.txt","w")
+    #         string.truncate(0)
+    #         string.write(d)
+    #         string.close()
     #     os.system("pkill -f /home/grimm/Desktop/Akil/camera.py")
     #     call(["gnome-terminal", "--", "sh", "-c", "python3 /home/grimm/Desktop/Akil/detect.py; bash"])
     # elif cmd[0]==b'\x0b' and cmd[1]== b'\x00':

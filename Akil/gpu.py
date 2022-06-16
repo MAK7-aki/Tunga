@@ -5,11 +5,12 @@ import psutil
 
 
 while True:
-  c=psutil.cpu_percent(1)#CPU
-  r=psutil.virtual_memory().percent#RAM
-  c=int(c)
-  r=int(r)
-  print(c,r)
+    c=psutil.cpu_percent(1)#CPU
+    r=psutil.virtual_memory().percent#RAM
+    t=psutil.sensors_temperatures()
+    c=int(c)
+    r=int(r)
+    print(c,r,t)
 
 
 

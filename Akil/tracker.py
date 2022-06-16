@@ -4,12 +4,7 @@ import sys
 tracker = cv2.legacy.TrackerMOSSE_create()
 video = cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
 bbox = None
-v=0
-try:
-    if sys.argv[1]=="on":
-        v=1
-except:
-    print ("no argument")
+v=1
 
 while True:
     ok,frame=video.read()
@@ -18,6 +13,7 @@ while True:
 
     if bbox is not None :
         ok,bbox=tracker.update(frame)
+        print(bbox)
         if ok:
             (x,y,w,h)=[int(v) for v in bbox]
             cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2,1)
@@ -34,8 +30,8 @@ while True:
         tracker.init(frame,bbox)
         v=v+1
 
-    elif v>1 and bbox == None:
-        v=1
+    # elif v>1 and bbox == None:
+    #     v=1
 
     elif key == ord("q"):
         break

@@ -12,8 +12,7 @@ master.wait_heartbeat()
 
 # Request all parameters
 master.mav.param_request_list_send(
-    master.target_system, master.target_component
-)
+    master.target_system, master.target_component)
 while True:
     time.sleep(0.01)
     try:
