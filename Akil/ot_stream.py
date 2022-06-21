@@ -19,6 +19,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
         self.master = mavutil.mavlink_connection("/dev/ttyUSB0", baud=115200)       
         self.bbox=None
         self.nt=0
+        self.t=0
         self.tracker = cv2.legacy.TrackerMOSSE_create()
         self.cap = cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
         self.number_frames = 0
@@ -41,7 +42,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                 frame = cv2.resize(frame, (640, 480), \
                     interpolation = cv2.INTER_LINEAR)
 
-                if self.number_frames == 3:
+                if self.t == 1:
                     self.master.mav.command_long_send(self.master.target_system, self.master.target_component,
                                             mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0)
 
@@ -53,6 +54,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                     if ok:
                         (x,y,w,h)=[int(v) for v in self.bbox]
                         cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2,1)
+                        self.t+=1
                     else:
                         self.bbox = None
                         self.nt=self.nt+1

@@ -13,5 +13,6 @@ while True:
     else:
         print("unable to open camera")
         break
+    
 cap.release()
 cv2.destroyAllWindows()

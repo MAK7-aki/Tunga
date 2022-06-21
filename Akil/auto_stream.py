@@ -17,7 +17,12 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
     def __init__(self, **properties):
         super(SensorFactory, self).__init__(**properties)
         self.cap = cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
-        # self.master = mavutil.mavlink_connection("/dev/ttyUSB0", baud=115200)
+        self.a=1 
+        self.master = mavutil.mavlink_connection("/dev/ttyUSB0", baud=115200)       
+        self.bbox=None
+        self.nt=0
+        self.t=0
+        self.tracker = cv2.legacy.TrackerMOSSE_create()
         self.d=0
         self.nd=0
         self.number_frames = 0
@@ -46,39 +51,65 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                 mask = cv2.inRange(image,lower,upper)
                 contours,hierarchy = cv2.findContours(mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
-                try:
-                    d=sys.argv[1]
-                except:
-                    d=""
-                    
+                # try:
+                #     d=sys.argv[1]
+                # except:
+                #     d=""
+                s = open("/home/tunga/Desktop/Akil/string.txt","r+")
+                d = s.read()
+                s.close()    
                 cv2.putText(frame,d, (490, 40), cv2.FONT_HERSHEY_SIMPLEX,1, (0, 0, 255), 2)
-            
-                if len(contours) != 0:
-                    for i in contours:
-                        if cv2.contourArea(i) > 500:
-                            # self.d = self.d + 1
-                            x,y,w,h = cv2.boundingRect(i)
-                            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),3)
-                #         else:
-                #             self.nd=self.nd + 1
-                # print(self.nd)
-                # print(self.d)
-                # if self.d==35:
-                #     self.master.mav.command_long_send(self.master.target_system, self.master.target_component,
-                #                      mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0)
+                string=open("/home/tunga/Desktop/Akil/box.txt","r+")
+                d=string.read()
+                if d=="1":
+                    self.t=0
+                    if len(contours) != 0:
+                        for i in contours:
+                            if cv2.contourArea(i) > 500:
+                                # self.d = self.d + 1
+                                x,y,w,h = cv2.boundingRect(i)
+                                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),3)
+                elif d=="0":
+                    self.t=0
+                
+                elif d=="2":
+                    if self.a==1:
+                        self.bbox = (270 ,190, 100 ,150)
+                        self.tracker.init(frame,self.bbox)
+                        self.a=self.a+1
+                    if self.t == 1:
+                        self.master.mav.command_long_send(self.master.target_system, self.master.target_component,
+                                                mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0)
 
-                #     msg = self.master.recv_match(type='COMMAND_ACK', blocking=True)
-                #     print(msg)
-                #     self.nd = 0
-                # elif self.d>37:
-                #     self.d=0
-                # if 50<self.nd<60:
-                #     self.master.mav.command_long_send(self.master.target_system, self.master.target_component,
-                #                      mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 0, 0, 0, 0, 0, 0, 0)
+                        msg = self.master.recv_match(type='COMMAND_ACK', blocking=True)
+                        print(msg)
+                        r = open("/home/tunga/Desktop/Akil/auto.txt","w")
+                        r.write("1")
+                        r.close()
+                    if self.bbox is not None :
+                        ok,self.bbox=self.tracker.update(frame)
+                        if ok:
+                            (x,y,w,h)=[int(v) for v in self.bbox]
+                            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2,1)
+                            self.t+=1
+                        else:
+                            self.bbox = None
+                            
+                            cv2.putText(frame,'Tracking Lost',(100,100),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
+                            
+                            self.master.mav.command_long_send(self.master.target_system, self.master.target_component,
+                                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 0, 0, 0, 0, 0, 0, 0)
 
-                #     msg2 = self.master.recv_match(type='COMMAND_ACK', blocking=True)
-                #     print(msg2)
-                #     self.d = 0
+                            msg2 = self.master.recv_match(type='COMMAND_ACK', blocking=True)
+                            print(msg2)
+                            self.a=1
+                            self.t=0
+                            r = open("/home/tunga/Desktop/Akil/auto.txt","w")
+                            r.write("0")
+                            r.close()
+
+                        
+                    
 
                 data = frame.tostring()
                 buf = Gst.Buffer.new_allocate(None, len(data), None)

@@ -17,7 +17,6 @@ bufferSize  = 1024
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 util = False
-string = False
 
 # Bind to address and ip
 
@@ -30,7 +29,7 @@ print("UDP server up and listening")
 def connect():
     while True:
 
-        msg3 = b'TA'+b'\x02'+b'\x0f'+b'\x01'+b'\x10'
+        # msg3 = b'TA'+b'\x02'+b'\x0f'+b'\x01'+b'\x10'
 
         c = psutil.cpu_percent(1)#CPU
         r = psutil.virtual_memory().percent#RAM
@@ -42,22 +41,17 @@ def connect():
         bytesToSend2         = r.to_bytes(1,"big")
         ut = sum(b'\x0d'+bytesToSend1+bytesToSend2).to_bytes(1,"big")
 
-        msg1 = b'TA'+b'\x03'+b'\x0d'+bytesToSend1+bytesToSend2 + ut
+        msg1 = b'TA'+b'\x03'+b'\x0d'+bytesToSend1+bytesToSend2
 
         # send back reversed string to client
-        UDPServerSocket.sendto(msg3,address)
-        print("connect")
+        # UDPServerSocket.sendto(msg3,address)
+        # print("connect")
         
-        if util == True:
+        # if util == True:
 
-            UDPServerSocket.sendto(msg1,address)
-            print("info has sent")
-            print(msg1)
-            
-        if string == True:
-            UDPServerSocket.sendto(msg2, address)
-            print(msg2)
-            print("read the string")
+        UDPServerSocket.sendto(msg1,address)
+        print("info has sent")
+        print(msg1)
             
         
 
@@ -73,9 +67,8 @@ while(True):
 
     string=open("/home/tunga/Desktop/Akil/read.txt","r+")
     d=string.read()
-    ls = 1 + len(d)
     # sc = sum(b'\x0e'+str.encode(d)).to_bytes(2,"little")
-    msg2 = b'TA'+ls.to_bytes(1,"little")+b'\x0e'+str.encode(d)
+    msg2 = b'TA'+b'\x0b'+b'\x0e'+str.encode(d)
 
 
     print(data)
@@ -150,18 +143,21 @@ while(True):
 
         elif cmd[0]==b'\r' and cmd[1]== b'\x01':
 
-            util = True
-        
-
-        elif cmd[0]==b'\x0f' and cmd[1]== b'\x01':
-
+            # util = True
             thread = threading.Thread(target = connect)
             thread.start()
+            
+
+        # elif cmd[0]==b'\x0f' and cmd[1]== b'\x01':
+
+        #     thread = threading.Thread(target = connect)
+        #     thread.start()
 
         elif cmd[0]==b'\x0e' and cmd[1]== b'\x01':
-
-            string = True
             
+            UDPServerSocket.sendto(msg2, address)
+            print(msg2)
+            print("read the string")
             
         # else:
         #     print("not valid")
