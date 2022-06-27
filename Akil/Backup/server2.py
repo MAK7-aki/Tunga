@@ -72,41 +72,6 @@ def connect():
         print("info has sent")
         print(msg1)
 
-        # string=open("/home/tunga/Desktop/Akil/read.txt","r+")
-        # d=string.read()
-        # ls = 1 + len(d)
-        # # sc = sum(b'\x0e'+str.encode(d)).to_bytes(2,"little")
-        # msg2 = b'TA'+ls.to_bytes(1,"little")+b'\x0e'+str.encode(d)
-
-        # r = open("/home/tunga/Desktop/Akil/auto.txt","r+")
-        # a = r.read()
-        # r.close()
-        # send back reversed string to client
-        # UDPServerSocket.sendto(msg3,address)
-        # print("connect")
-        
-        # if util == True:
-
-        #     UDPServerSocket.sendto(msg1,address)
-        #     print("info has sent")
-        #     print(msg1)
-            
-        # if rs == True:
-            
-            # for i in range (0,5):
-            # UDPServerSocket.sendto(msg2, address)
-            # print(msg2)
-            # print("read the string")
-        
-        # if a == "0" : 
-        #     msg4 = b'TA'+b'\x02'+b'\x10'+b'\x00'+b'\x10'
-        #     UDPServerSocket.sendto(msg4, address)
-        #     print(msg4)
-        # else:
-        #     msg5 = b'TA'+b'\x02'+b'\x10'+b'\x01'+b'\x11'
-        #     UDPServerSocket.sendto(msg5, address)
-        #     print(msg5)
-
 while(True):
 
     master = mavutil.mavlink_connection("/dev/ttyUSB0", baud=115200)
@@ -210,20 +175,21 @@ while(True):
         
 
         elif cmd[0]==b'\x0f' and cmd[1]== b'\x01':
-
-            thread = threading.Thread(target = connect)
-            thread.start()
-            clear_string()
-            stream("0")
-            r = open("/home/tunga/Desktop/Akil/auto.txt","w")
-            r.write("0")
-            r.close()
+            
             # if cmd[2] != b'\x01':
             
             #     os.system("pkill -f /home/tunga/Desktop/Akil/auto_stream.py")
             #     call(["gnome-terminal", "--", "sh", "-c", "python3 /home/tunga/Desktop/Akil/auto_stream.py; bash"])
             if cmd[2] == b'\x01':
                 util = True
+            else:
+                thread = threading.Thread(target = connect)
+                thread.start() 
+                stream("0")
+                clear_string()
+                r = open("/home/tunga/Desktop/Akil/auto.txt","w")
+                r.write("0")
+                r.close()
 
         elif cmd[0]==b'\x0e' and cmd[1]== b'\x01':
 

@@ -39,8 +39,8 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
     def on_need_data(self, src, length):
         if self.cap.isOpened():
             ret, frame = self.cap.read()
-            lower = np.array([110,50,50])
-            upper = np.array([130,255,255])
+            lower = np.array([36, 25, 25])
+            upper = np.array([70,255,255])
 
             if ret:
                 # It is better to change the resolution of the camera 
@@ -81,8 +81,9 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                         self.master.mav.command_long_send(self.master.target_system, self.master.target_component,
                                                 mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0)
 
-                        msg = self.master.recv_match(type='COMMAND_ACK', blocking=True)
-                        print(msg)
+                        # msg = self.master.recv_match(type='COMMAND_ACK', blocking=True)
+                        # print(msg)
+                        print('Arm command has been sent')
                         r = open("/home/tunga/Desktop/Akil/auto.txt","w")
                         r.write("1")
                         r.close()
@@ -100,8 +101,9 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                             self.master.mav.command_long_send(self.master.target_system, self.master.target_component,
                                     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 0, 0, 0, 0, 0, 0, 0)
 
-                            msg2 = self.master.recv_match(type='COMMAND_ACK', blocking=True)
-                            print(msg2)
+                            # msg2 = self.master.recv_match(type='COMMAND_ACK', blocking=True)
+                            # print(msg2)
+                            print('Disarm command has been sent')
                             self.a=1
                             self.t=0
                             r = open("/home/tunga/Desktop/Akil/auto.txt","w")

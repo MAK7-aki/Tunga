@@ -1,19 +1,57 @@
-# t = sum(b'\x0f'+b'\x01').to_bytes(1,"big")
-# # a=t.to_bytes(1,"big")
-# print(t)
-# import base64
+import time, sys
 
-# string=open("/home/tunga/Desktop/Akil/read.txt","r+")
-# d=string.read()
-# # msg2 = b'TA'+b'\x0b'+b'\x0e'+ base64.b64encode(d)
-# print(base64.b64encode(str.encode(d)))
-# r= sum(b'\x0e'+ base64.b64encode(d))
-# k=r.to_bytes(2,"big")
-# print(r)
-# print(k)
-# print(msg2)
-# for i in range(0,5):
-#     print("helo")
-auto = open("/home/tunga/Desktop/Akil/auto.txt","r+").read()
-
-print(auto)
+# Function to take normal input
+def normal_out():
+    
+      # Stores the start time
+    start = time.perf_counter()
+  
+    # Output Integer
+    n = 5
+    print(n)
+  
+    # Output String
+    s = "GeeksforGeeks"
+    print(s)
+  
+    # Output List
+    arr = [1, 2, 3, 4]
+    print(arr) 
+  
+      # Stores the end time
+    end = time.perf_counter()
+      
+    # Print the time taken
+    print("\nTime taken in Normal Output:", \
+                      end - start)
+  
+# Function for Fast Output
+def fast_out():
+  
+    start = time.perf_counter()
+    # Output Integer
+    n = 5
+    sys.stdout.write(str(n))
+  
+    # Output String
+    s = "GeeksforGeeks\n"
+    sys.stdout.write(s)
+  
+    # Output Array
+    arr = [1, 2, 3, 4]
+    print(arr)
+          
+    # Stores the end time
+    end = time.perf_counter()
+      
+    # Print the time taken
+    print("\nTime taken in Fast Output:", \
+                      end - start)
+  
+# Driver Code
+if __name__ == "__main__":
+  
+    # Function Call
+    normal_out()
+      
+    fast_out()

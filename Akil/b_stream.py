@@ -17,7 +17,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
     def __init__(self, **properties):
         super(SensorFactory, self).__init__(**properties)
         self.cap = cv2.VideoCapture("rtsp://admin:tunga@2020@192.168.168.64")
-        # self.master = mavutil.mavlink_connection("/dev/ttyUSB0", baud=115200)
+        # self.master = mavutil.mavlink_connection("/dev/ttyACM0", baud=115200)
         self.d=0
         self.nd=0
         self.number_frames = 0
@@ -25,7 +25,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
         self.duration = 1 / self.fps * Gst.SECOND  # duration of a frame in nanoseconds
         self.launch_string = 'appsrc name=source is-live=true block=true format=GST_FORMAT_TIME ' \
                              'caps=video/x-raw,format=BGR,width={},height={},framerate={}/1 ' \
-                             '! videoconvert ! video/x-raw,format=I420 ' \
+                             '! videoconvert ! video/x-raw,format=NV12 ' \
                              '! x264enc speed-preset=ultrafast tune=zerolatency ' \
                              '! rtph264pay config-interval=1 name=pay0 pt=96' \
                              .format(640, 480, self.fps)
@@ -59,26 +59,7 @@ class SensorFactory(GstRtspServer.RTSPMediaFactory):
                             # self.d = self.d + 1
                             x,y,w,h = cv2.boundingRect(i)
                             cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),3)
-                #         else:
-                #             self.nd=self.nd + 1
-                # print(self.nd)
-                # print(self.d)
-                # if self.d==35:
-                #     self.master.mav.command_long_send(self.master.target_system, self.master.target_component,
-                #                      mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1, 0, 0, 0, 0, 0, 0)
-
-                #     msg = self.master.recv_match(type='COMMAND_ACK', blocking=True)
-                #     print(msg)
-                #     self.nd = 0
-                # elif self.d>37:
-                #     self.d=0
-                # if 50<self.nd<60:
-                #     self.master.mav.command_long_send(self.master.target_system, self.master.target_component,
-                #                      mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 0, 0, 0, 0, 0, 0, 0)
-
-                #     msg2 = self.master.recv_match(type='COMMAND_ACK', blocking=True)
-                #     print(msg2)
-                #     self.d = 0
+             
 
                 data = frame.tostring()
                 buf = Gst.Buffer.new_allocate(None, len(data), None)

@@ -30,8 +30,8 @@ while True:
         tracker.init(frame,bbox)
         v=v+1
 
-    # elif v>1 and bbox == None:
-    #     v=1
+    elif v>1 and bbox == None:
+        v=1
 
     elif key == ord("q"):
         break
